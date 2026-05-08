@@ -1,3 +1,31 @@
+<script setup>
+import { computed, reactive, ref } from 'vue'
+
+const profileSaved = ref(false)
+
+const profile = reactive({
+  firstName: '',
+  lastName: '',
+  email: '',
+  favoriteFood: '',
+})
+
+const profileName = computed(() => {
+  const fullName = `${profile.firstName} ${profile.lastName}`.trim()
+  return fullName || 'Foodie Guest'
+})
+
+const profileInitials = computed(() => {
+  const firstInitial = profile.firstName.trim().charAt(0)
+  const lastInitial = profile.lastName.trim().charAt(0)
+  return `${firstInitial}${lastInitial}` || 'F'
+})
+
+const saveProfile = () => {
+  profileSaved.value = true
+}
+</script>
+
 <template>
   <main>
     <header class="border-b border-orange-100 bg-white">
@@ -19,12 +47,91 @@
 
     <section class="mx-auto grid max-w-6xl gap-6 px-6 py-8 lg:grid-cols-[0.9fr_1.1fr] lg:px-10">
       <div class="space-y-6">
-        <section class="app-panel">
+        <section
+          v-if="!profileSaved"
+          class="app-panel"
+        >
           <p class="section-label">Profile</p>
-          <h2 class="section-title">Foodie profile setup</h2>
-          <p class="section-copy">
-            This section will collect the user's name, email, and favorite food before showing the dashboard.
-          </p>
+          <h2 class="section-title">Create your Foodie profile</h2>
+          <p class="section-copy">Start by saving the basic info that will personalize the dashboard.</p>
+
+          <form
+            class="mt-6 space-y-4"
+            @submit.prevent="saveProfile"
+          >
+            <div class="grid gap-4 sm:grid-cols-2">
+              <label class="form-field">
+                <span>First Name</span>
+                <input
+                  v-model="profile.firstName"
+                  type="text"
+                  required
+                  placeholder="Chris"
+                />
+              </label>
+
+              <label class="form-field">
+                <span>Last Name</span>
+                <input
+                  v-model="profile.lastName"
+                  type="text"
+                  placeholder="Contreras"
+                />
+              </label>
+            </div>
+
+            <label class="form-field">
+              <span>Email</span>
+              <input
+                v-model="profile.email"
+                type="email"
+                required
+                placeholder="grader@example.com"
+              />
+            </label>
+
+            <label class="form-field">
+              <span>Favorite Food</span>
+              <input
+                v-model="profile.favoriteFood"
+                type="text"
+                placeholder="Tacos, pizza, sushi..."
+              />
+            </label>
+
+            <button
+              type="submit"
+              class="primary-button"
+            >
+              Save Profile
+            </button>
+          </form>
+        </section>
+
+        <section
+          v-else
+          class="app-panel"
+        >
+          <p class="section-label">Profile</p>
+          <div class="mt-3 flex items-center gap-4">
+            <div class="flex h-16 w-16 items-center justify-center rounded-full bg-orange-100 text-xl font-black text-orange-700">
+              {{ profileInitials }}
+            </div>
+            <div>
+              <h2 class="section-title">{{ profileName }}</h2>
+              <p class="section-copy mt-1">
+                Favorite food: {{ profile.favoriteFood || 'Still deciding' }}
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            class="secondary-button mt-6"
+            @click="profileSaved = false"
+          >
+            Edit Profile
+          </button>
         </section>
 
         <section class="app-panel">

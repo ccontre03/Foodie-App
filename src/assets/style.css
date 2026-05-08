@@ -56,3 +56,73 @@ body {
   font-size: 0.85rem;
   font-weight: 700;
 }
+
+.form-field {
+  display: block;
+}
+
+.form-field span {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #334155;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+  width: 100%;
+  border: 1px solid #fed7aa;
+  border-radius: 14px;
+  background: #fffaf3;
+  padding: 0.85rem 1rem;
+  color: #0f172a;
+  outline: none;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus {
+  border-color: #fb923c;
+  background: white;
+  box-shadow: 0 0 0 4px rgba(251, 146, 60, 0.14);
+}
+
+.primary-button,
+.secondary-button {
+  border-radius: 14px;
+  padding: 0.85rem 1.1rem;
+  font-weight: 800;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    transform 160ms ease;
+}
+
+.primary-button {
+  width: 100%;
+  border: 0;
+  background: #ea580c;
+  color: white;
+}
+
+.primary-button:hover,
+.secondary-button:hover {
+  transform: translateY(-1px);
+}
+
+.secondary-button {
+  border: 1px solid #fed7aa;
+  background: white;
+  color: #c2410c;
+}
+
+.secondary-button:hover {
+  border-color: #fb923c;
+  background: #fff7ed;
+}
