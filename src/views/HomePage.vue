@@ -32,6 +32,24 @@ const profileInitials = computed(() => {
   return `${firstInitial}${lastInitial}` || 'F'
 })
 
+const averageRating = computed(() => {
+  if (!visits.value.length) return '0.0'
+
+  const total = visits.value.reduce((sum, visit) => sum + Number(visit.rating || 0), 0)
+  return (total / visits.value.length).toFixed(1)
+})
+
+const topCategory = computed(() => {
+  if (!visits.value.length) return 'None'
+
+  const categoryCounts = visits.value.reduce((counts, visit) => {
+    counts[visit.category] = (counts[visit.category] || 0) + 1
+    return counts
+  }, {})
+
+  return Object.entries(categoryCounts).sort((first, second) => second[1] - first[1])[0][0]
+})
+
 const saveProfile = () => {
   profileSaved.value = true
 }
@@ -262,17 +280,49 @@ const saveVisit = () => {
             <p>Restaurants</p>
           </div>
           <div class="stat-card">
-            <span>0.0</span>
+            <span>{{ averageRating }}</span>
             <p>Average Rating</p>
           </div>
           <div class="stat-card">
-            <span>None</span>
+            <span>{{ topCategory }}</span>
             <p>Top Category</p>
           </div>
         </div>
 
-        <div class="mt-6 rounded-2xl border border-dashed border-orange-200 bg-orange-50 p-6 text-sm font-medium text-orange-800">
+        <div
+          v-if="!visits.length"
+          class="mt-6 rounded-2xl border border-dashed border-orange-200 bg-orange-50 p-6 text-sm font-medium text-orange-800"
+        >
           Saved restaurant cards will appear here after users add local food spots.
+        </div>
+
+        <div
+          v-else
+          class="mt-6 space-y-4"
+        >
+          <article
+            v-for="visit in visits"
+            :key="visit.id"
+            class="visit-card"
+          >
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div>
+                <div class="flex flex-wrap items-center gap-2">
+                  <h3 class="text-xl font-bold text-slate-950">{{ visit.name }}</h3>
+                  <span class="category-pill">{{ visit.category }}</span>
+                </div>
+                <p class="mt-2 text-sm font-semibold text-slate-600">
+                  {{ visit.favoriteDish }} · {{ visit.rating }}/5 · {{ visit.visitedAt }}
+                </p>
+                <p
+                  v-if="visit.notes"
+                  class="mt-3 text-sm leading-relaxed text-slate-500"
+                >
+                  {{ visit.notes }}
+                </p>
+              </div>
+            </div>
+          </article>
         </div>
       </section>
     </section>

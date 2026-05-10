@@ -126,3 +126,19 @@ body {
   border-color: #fb923c;
   background: #fff7ed;
 }
+
+.visit-card {
+  border: 1px solid #ffedd5;
+  border-radius: 18px;
+  background: linear-gradient(180deg, white 0%, #fffaf3 100%);
+  padding: 1rem;
+}
+
+.category-pill {
+  border-radius: 999px;
+  background: #ffedd5;
+  padding: 0.35rem 0.7rem;
+  color: #c2410c;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
