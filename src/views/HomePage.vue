@@ -10,6 +10,17 @@ const profile = reactive({
   favoriteFood: '',
 })
 
+const visits = ref([])
+
+const visitForm = reactive({
+  name: '',
+  category: 'American',
+  favoriteDish: '',
+  rating: 5,
+  visitedAt: new Date().toISOString().slice(0, 10),
+  notes: '',
+})
+
 const profileName = computed(() => {
   const fullName = `${profile.firstName} ${profile.lastName}`.trim()
   return fullName || 'Foodie Guest'
@@ -23,6 +34,29 @@ const profileInitials = computed(() => {
 
 const saveProfile = () => {
   profileSaved.value = true
+}
+
+const resetVisitForm = () => {
+  visitForm.name = ''
+  visitForm.category = 'American'
+  visitForm.favoriteDish = ''
+  visitForm.rating = 5
+  visitForm.visitedAt = new Date().toISOString().slice(0, 10)
+  visitForm.notes = ''
+}
+
+const saveVisit = () => {
+  visits.value.unshift({
+    id: Date.now(),
+    name: visitForm.name.trim(),
+    category: visitForm.category,
+    favoriteDish: visitForm.favoriteDish.trim(),
+    rating: Number(visitForm.rating),
+    visitedAt: visitForm.visitedAt,
+    notes: visitForm.notes.trim(),
+  })
+
+  resetVisitForm()
 }
 </script>
 
@@ -40,7 +74,9 @@ const saveProfile = () => {
 
         <div class="rounded-2xl border border-orange-100 bg-orange-50 px-5 py-4">
           <p class="text-sm font-semibold text-orange-700">MVP Loop</p>
-          <p class="mt-1 text-sm text-slate-600">Add, review, edit, and save local food visits.</p>
+          <p class="mt-1 text-sm text-slate-600">
+            {{ visits.length }} visits captured in this session.
+          </p>
         </div>
       </div>
     </header>
@@ -137,9 +173,83 @@ const saveProfile = () => {
         <section class="app-panel">
           <p class="section-label">Add Restaurant</p>
           <h2 class="section-title">Restaurant and dish form</h2>
-          <p class="section-copy">
-            This section will let users add restaurant details, favorite dishes, ratings, visit dates, and notes.
-          </p>
+          <p class="section-copy">Save the local restaurant, favorite dish, rating, and notes from a visit.</p>
+
+          <form
+            class="mt-6 space-y-4"
+            @submit.prevent="saveVisit"
+          >
+            <label class="form-field">
+              <span>Restaurant or Place</span>
+              <input
+                v-model="visitForm.name"
+                type="text"
+                required
+                placeholder="Example: Taco Fiesta"
+              />
+            </label>
+
+            <div class="grid gap-4 sm:grid-cols-2">
+              <label class="form-field">
+                <span>Category</span>
+                <select v-model="visitForm.category">
+                  <option>American</option>
+                  <option>Italian</option>
+                  <option>Mexican</option>
+                  <option>Japanese</option>
+                  <option>Chinese</option>
+                  <option>Dessert</option>
+                  <option>Coffee</option>
+                  <option>Other</option>
+                </select>
+              </label>
+
+              <label class="form-field">
+                <span>Rating</span>
+                <select v-model="visitForm.rating">
+                  <option :value="5">5 - Loved it</option>
+                  <option :value="4">4 - Great</option>
+                  <option :value="3">3 - Good</option>
+                  <option :value="2">2 - Okay</option>
+                  <option :value="1">1 - Skip next time</option>
+                </select>
+              </label>
+            </div>
+
+            <label class="form-field">
+              <span>Favorite Dish</span>
+              <input
+                v-model="visitForm.favoriteDish"
+                type="text"
+                required
+                placeholder="Example: Street tacos"
+              />
+            </label>
+
+            <label class="form-field">
+              <span>Date Visited</span>
+              <input
+                v-model="visitForm.visitedAt"
+                type="date"
+              />
+            </label>
+
+            <label class="form-field">
+              <span>Notes</span>
+              <textarea
+                v-model="visitForm.notes"
+                rows="4"
+                placeholder="What should you remember about this place?"
+              ></textarea>
+            </label>
+
+            <button
+              type="submit"
+              class="primary-button"
+            >
+              Add Visit
+            </button>
+          </form>
         </section>
       </div>
 
@@ -148,7 +258,7 @@ const saveProfile = () => {
         <h2 class="section-title">Saved restaurant visits</h2>
         <div class="mt-6 grid gap-4 sm:grid-cols-3">
           <div class="stat-card">
-            <span>0</span>
+            <span>{{ visits.length }}</span>
             <p>Restaurants</p>
           </div>
           <div class="stat-card">
