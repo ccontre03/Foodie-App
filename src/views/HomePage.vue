@@ -1,16 +1,28 @@
 <script setup>
-import { computed, reactive, ref } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 
-const profileSaved = ref(false)
+const PROFILE_KEY = 'foodieapp-profile'
+const VISITS_KEY = 'foodieapp-visits'
+
+const loadStoredValue = (key, fallback) => {
+  try {
+    const storedValue = localStorage.getItem(key)
+    return storedValue ? JSON.parse(storedValue) : fallback
+  } catch {
+    return fallback
+  }
+}
 
 const profile = reactive({
   firstName: '',
   lastName: '',
   email: '',
   favoriteFood: '',
+  ...loadStoredValue(PROFILE_KEY, {}),
 })
 
-const visits = ref([])
+const profileSaved = ref(Boolean(profile.firstName && profile.email))
+const visits = ref(loadStoredValue(VISITS_KEY, []))
 const editingVisitId = ref(null)
 
 const visitForm = reactive({
@@ -50,6 +62,22 @@ const topCategory = computed(() => {
 
   return Object.entries(categoryCounts).sort((first, second) => second[1] - first[1])[0][0]
 })
+
+watch(
+  profile,
+  () => {
+    localStorage.setItem(PROFILE_KEY, JSON.stringify(profile))
+  },
+  { deep: true },
+)
+
+watch(
+  visits,
+  () => {
+    localStorage.setItem(VISITS_KEY, JSON.stringify(visits.value))
+  },
+  { deep: true },
+)
 
 const saveProfile = () => {
   profileSaved.value = true
