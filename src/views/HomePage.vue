@@ -11,6 +11,7 @@ const profile = reactive({
 })
 
 const visits = ref([])
+const editingVisitId = ref(null)
 
 const visitForm = reactive({
   name: '',
@@ -55,6 +56,7 @@ const saveProfile = () => {
 }
 
 const resetVisitForm = () => {
+  editingVisitId.value = null
   visitForm.name = ''
   visitForm.category = 'American'
   visitForm.favoriteDish = ''
@@ -64,17 +66,45 @@ const resetVisitForm = () => {
 }
 
 const saveVisit = () => {
-  visits.value.unshift({
-    id: Date.now(),
+  const visitDetails = {
     name: visitForm.name.trim(),
     category: visitForm.category,
     favoriteDish: visitForm.favoriteDish.trim(),
     rating: Number(visitForm.rating),
     visitedAt: visitForm.visitedAt,
     notes: visitForm.notes.trim(),
-  })
+  }
+
+  if (editingVisitId.value) {
+    visits.value = visits.value.map((visit) => {
+      return visit.id === editingVisitId.value ? { ...visit, ...visitDetails } : visit
+    })
+  } else {
+    visits.value.unshift({
+      id: Date.now(),
+      ...visitDetails,
+    })
+  }
 
   resetVisitForm()
+}
+
+const editVisit = (visit) => {
+  editingVisitId.value = visit.id
+  visitForm.name = visit.name
+  visitForm.category = visit.category
+  visitForm.favoriteDish = visit.favoriteDish
+  visitForm.rating = visit.rating
+  visitForm.visitedAt = visit.visitedAt
+  visitForm.notes = visit.notes
+}
+
+const deleteVisit = (visitId) => {
+  if (editingVisitId.value === visitId) {
+    resetVisitForm()
+  }
+
+  visits.value = visits.value.filter((visit) => visit.id !== visitId)
 }
 </script>
 
@@ -190,8 +220,16 @@ const saveVisit = () => {
 
         <section class="app-panel">
           <p class="section-label">Add Restaurant</p>
-          <h2 class="section-title">Restaurant and dish form</h2>
-          <p class="section-copy">Save the local restaurant, favorite dish, rating, and notes from a visit.</p>
+          <h2 class="section-title">
+            {{ editingVisitId ? 'Edit saved visit' : 'Restaurant and dish form' }}
+          </h2>
+          <p class="section-copy">
+            {{
+              editingVisitId
+                ? 'Update the saved details for this local food visit.'
+                : 'Save the local restaurant, favorite dish, rating, and notes from a visit.'
+            }}
+          </p>
 
           <form
             class="mt-6 space-y-4"
@@ -265,7 +303,16 @@ const saveVisit = () => {
               type="submit"
               class="primary-button"
             >
-              Add Visit
+              {{ editingVisitId ? 'Save Changes' : 'Add Visit' }}
+            </button>
+
+            <button
+              v-if="editingVisitId"
+              type="button"
+              class="secondary-button w-full"
+              @click="resetVisitForm"
+            >
+              Cancel Edit
             </button>
           </form>
         </section>
@@ -320,6 +367,23 @@ const saveVisit = () => {
                 >
                   {{ visit.notes }}
                 </p>
+              </div>
+
+              <div class="flex gap-2">
+                <button
+                  type="button"
+                  class="small-action"
+                  @click="editVisit(visit)"
+                >
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  class="small-action danger"
+                  @click="deleteVisit(visit.id)"
+                >
+                  Delete
+                </button>
               </div>
             </div>
           </article>

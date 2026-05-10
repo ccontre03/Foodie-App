@@ -142,3 +142,33 @@ body {
   font-size: 0.75rem;
   font-weight: 800;
 }
+
+.small-action {
+  border: 1px solid #fed7aa;
+  border-radius: 999px;
+  background: white;
+  padding: 0.45rem 0.8rem;
+  color: #c2410c;
+  font-size: 0.85rem;
+  font-weight: 800;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    transform 160ms ease;
+}
+
+.small-action:hover {
+  border-color: #fb923c;
+  background: #fff7ed;
+  transform: translateY(-1px);
+}
+
+.small-action.danger {
+  border-color: #fecdd3;
+  color: #be123c;
+}
+
+.small-action.danger:hover {
+  border-color: #fb7185;
+  background: #fff1f2;
+}
